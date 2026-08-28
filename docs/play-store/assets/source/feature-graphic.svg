@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="500" viewBox="0 0 1024 500">
+  <rect width="1024" height="500" fill="#0B1F33"/>
+  <text x="76" y="226" fill="#FFFFFF" font-family="Segoe UI, sans-serif" font-size="64" font-weight="700">Location Mock</text>
+  <text x="80" y="278" fill="#B8C7D1" font-family="Segoe UI, sans-serif" font-size="28">Test GPS. Keep control.</text>
+  <g fill="none" stroke="#4DD0C8" stroke-width="6" opacity=".35">
+    <circle cx="824" cy="210" r="128"/>
+    <path d="M824 54v54M824 312v54M668 210h54M926 210h54"/>
+  </g>
+  <path d="M824 112a82 82 0 0 0-82 82c0 74 82 174 82 174s82-100 82-174a82 82 0 0 0-82-82zm0 46a36 36 0 1 1 0 72 36 36 0 0 1 0-72z" fill="#4DD0C8" fill-rule="evenodd"/>
+</svg>

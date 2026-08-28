@@ -65,6 +65,8 @@ fun LocationMockScreen(
     initialLatitude: String,
     initialLongitude: String,
     active: Boolean,
+    starting: Boolean,
+    stopping: Boolean,
     mockAppAllowed: Boolean,
     serviceError: String?,
     onStart: (Coordinates) -> Unit,
@@ -124,7 +126,12 @@ fun LocationMockScreen(
                     .verticalScroll(rememberScrollState())
                     .padding(horizontal = 20.dp, vertical = 12.dp),
             ) {
-                StatusSurface(active = active, mockAppAllowed = mockAppAllowed)
+                StatusSurface(
+                    active = active,
+                    starting = starting,
+                    stopping = stopping,
+                    mockAppAllowed = mockAppAllowed,
+                )
                 Spacer(Modifier.height(28.dp))
                 Text(
                     text = stringResource(R.string.coordinates_title),
@@ -144,7 +151,7 @@ fun LocationMockScreen(
                         label = { Text(stringResource(R.string.latitude)) },
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
                         singleLine = true,
-                        enabled = !active,
+                        enabled = !active && !starting && !stopping,
                         modifier = Modifier.weight(1f),
                     )
                     OutlinedTextField(
@@ -153,12 +160,12 @@ fun LocationMockScreen(
                         label = { Text(stringResource(R.string.longitude)) },
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
                         singleLine = true,
-                        enabled = !active,
+                        enabled = !active && !starting && !stopping,
                         modifier = Modifier.weight(1f),
                     )
                 }
                 Spacer(Modifier.height(12.dp))
-                Presets(onSelect = {
+                Presets(enabled = !active && !starting && !stopping, onSelect = {
                     latitude = it.latitude.toString()
                     longitude = it.longitude.toString()
                     inputError = null
@@ -170,7 +177,7 @@ fun LocationMockScreen(
                 Spacer(Modifier.height(20.dp))
                 Button(
                     onClick = {
-                        if (active) {
+                        if (active || starting) {
                             onStop()
                         } else {
                             runCatching { Coordinates.parse(latitude, longitude) }
@@ -178,13 +185,30 @@ fun LocationMockScreen(
                                 .onFailure { inputError = it.message }
                         }
                     },
+                    enabled = !stopping,
                     modifier = Modifier.fillMaxWidth(),
                 ) {
-                    Text(stringResource(if (active) R.string.stop_mock else R.string.start_mock))
+                    Text(
+                        stringResource(
+                            when {
+                                stopping -> R.string.stopping_mock
+                                active || starting -> R.string.stop_mock
+                                else -> R.string.start_mock
+                            },
+                        ),
+                    )
                 }
                 Spacer(Modifier.height(8.dp))
                 Text(
-                    text = stringResource(if (active) R.string.active_help else R.string.inactive_help),
+                    text = stringResource(
+                        when {
+                            stopping -> R.string.stopping_help
+                            active -> R.string.active_help
+                            starting -> R.string.starting_help
+                            !mockAppAllowed -> R.string.inactive_help
+                            else -> R.string.ready_help
+                        },
+                    ),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
@@ -234,14 +258,23 @@ fun LocationMockScreen(
 }
 
 @Composable
-private fun StatusSurface(active: Boolean, mockAppAllowed: Boolean) {
+private fun StatusSurface(
+    active: Boolean,
+    starting: Boolean,
+    stopping: Boolean,
+    mockAppAllowed: Boolean,
+) {
     val statusColor = when {
+        stopping -> MaterialTheme.colorScheme.primary
         active -> Color(0xFF00796B)
+        starting -> MaterialTheme.colorScheme.primary
         !mockAppAllowed -> MaterialTheme.colorScheme.error
         else -> MaterialTheme.colorScheme.onSurfaceVariant
     }
     val statusText = when {
+        stopping -> R.string.status_stopping
         active -> R.string.status_active
+        starting -> R.string.status_starting
         !mockAppAllowed -> R.string.status_setup
         else -> R.string.status_stopped
     }
@@ -262,7 +295,7 @@ private fun StatusSurface(active: Boolean, mockAppAllowed: Boolean) {
 }
 
 @Composable
-private fun Presets(onSelect: (Coordinates) -> Unit) {
+private fun Presets(enabled: Boolean, onSelect: (Coordinates) -> Unit) {
     val presets = listOf(
         LocationPreset(stringResource(R.string.preset_prague), Coordinates(50.0755, 14.4378)),
         LocationPreset(stringResource(R.string.preset_london), Coordinates(51.5074, -0.1278)),
@@ -274,7 +307,11 @@ private fun Presets(onSelect: (Coordinates) -> Unit) {
         modifier = Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()),
     ) {
         presets.forEach { preset ->
-            AssistChip(onClick = { onSelect(preset.coordinates) }, label = { Text(preset.name) })
+            AssistChip(
+                onClick = { onSelect(preset.coordinates) },
+                label = { Text(preset.name) },
+                enabled = enabled,
+            )
         }
     }
 }

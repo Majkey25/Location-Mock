@@ -8,7 +8,7 @@ Build a free, offline-first Android app that keeps a user-selected mock GPS loca
 
 - App label: `Location Mock`
 - Application ID and namespace: `com.majkeylab.locationmock`
-- Android 10 minimum, Android 17 target; verified on Android 16 target phone
+- Android 10 minimum, Android 17 target, and Android 16 compatibility
 - English-only UI
 - No ads, analytics, account, backend, map SDK, or `INTERNET` permission
 - One screen: current status, latitude/longitude fields, city presets, Start/Stop action, setup guidance, and IP/VPN handoff
@@ -20,7 +20,7 @@ Build a free, offline-first Android app that keeps a user-selected mock GPS loca
 - `Coordinates` owns numeric parsing and range validation.
 - `MockLocationService` is a user-started foreground location service. It keeps Google Play services Fused Location Provider in mock mode and publishes a fresh timestamped location every second.
 - `MainActivity` hosts one Material 3 Compose screen.
-- `SharedPreferences` stores only last coordinates and current service status. Size is fixed.
+- `SharedPreferences` stores only last coordinates and latest service error. In-process service state resets safely on process death. Size is fixed.
 - Android Developer options remain the trust boundary. The user must select Location Mock as the mock location app.
 
 ## Tech stack
@@ -54,7 +54,7 @@ Build a free, offline-first Android app that keeps a user-selected mock GPS loca
 
 - Unit test valid coordinates, decimal comma input, latitude/longitude boundaries, invalid text, and out-of-range values.
 - Run Gradle test, lint, debug APK, and release AAB gates.
-- On Galaxy S25 Ultra only: verify setup failure before mock authorization, happy path, boundary coordinate, invalid input, Stop restoration, menu actions, Proton handoff, process state, notification, `dumpsys location`, and crash buffer.
+- Required stable-release device gate on Galaxy S25 Ultra: verify setup failure before mock authorization, happy path, boundary coordinate, invalid input, Stop restoration, menu actions, Proton handoff, process state, notification, `dumpsys location`, and crash buffer.
 - Verify Chrome geolocation separately. IP stays unchanged until a VPN connects.
 
 ## Boundaries

@@ -1,0 +1,18 @@
+{
+  "locale": "en-US",
+  "device": "Pixel 6 emulator, Android 16, 1080x2400",
+  "screenshots": [
+    {
+      "file": "en-US/phone/01-active-location.png",
+      "caption": "Mock location active with exact coordinates and persistent Stop control"
+    },
+    {
+      "file": "en-US/phone/02-setup.png",
+      "caption": "Clear one-time Android Developer options setup"
+    },
+    {
+      "file": "en-US/phone/03-privacy.png",
+      "caption": "Local-only privacy summary with no Internet permission"
+    }
+  ]
+}

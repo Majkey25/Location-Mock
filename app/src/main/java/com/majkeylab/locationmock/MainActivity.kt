@@ -17,6 +17,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.core.content.ContextCompat
 import androidx.core.net.toUri
@@ -31,37 +32,52 @@ class MainActivity : ComponentActivity() {
             val preferences = remember {
                 getSharedPreferences(MockLocationService.PREFERENCES, MODE_PRIVATE)
             }
-            var active by remember { mutableStateOf(preferences.getBoolean(MockLocationService.KEY_ACTIVE, false)) }
+            var active by remember { mutableStateOf(MockLocationService.isRunning) }
+            var starting by rememberSaveable { mutableStateOf(false) }
+            var stopping by remember { mutableStateOf(MockLocationService.isStopping) }
             var serviceError by remember { mutableStateOf(preferences.getString(MockLocationService.KEY_ERROR, null)) }
             var actionError by remember { mutableStateOf<String?>(null) }
             var mockAppAllowed by remember { mutableStateOf(isMockLocationApp()) }
-            var pendingCoordinates by remember { mutableStateOf<Coordinates?>(null) }
+            var pendingLatitude by rememberSaveable { mutableStateOf<Double?>(null) }
+            var pendingLongitude by rememberSaveable { mutableStateOf<Double?>(null) }
 
             fun start(coordinates: Coordinates) {
                 actionError = null
                 serviceError = null
+                starting = true
                 MockLocationService.start(this, coordinates)
             }
 
             val permissionLauncher = rememberLauncherForActivityResult(
                 ActivityResultContracts.RequestMultiplePermissions(),
             ) { grants ->
-                val preciseGranted = grants[Manifest.permission.ACCESS_FINE_LOCATION] == true ||
+                val locationGranted = grants[Manifest.permission.ACCESS_COARSE_LOCATION] == true ||
                     ContextCompat.checkSelfPermission(
                         this,
-                        Manifest.permission.ACCESS_FINE_LOCATION,
+                        Manifest.permission.ACCESS_COARSE_LOCATION,
                     ) == PackageManager.PERMISSION_GRANTED
-                if (preciseGranted) {
-                    pendingCoordinates?.let(::start)
+                if (locationGranted) {
+                    val latitude = pendingLatitude
+                    val longitude = pendingLongitude
+                    if (latitude != null && longitude != null) {
+                        start(Coordinates.of(latitude, longitude))
+                    }
                 } else {
-                    actionError = getString(R.string.error_precise_permission)
+                    actionError = getString(R.string.error_location_permission)
                 }
-                pendingCoordinates = null
+                pendingLatitude = null
+                pendingLongitude = null
             }
 
             DisposableEffect(lifecycle) {
                 val observer = LifecycleEventObserver { _, event ->
-                    if (event == Lifecycle.Event.ON_RESUME) mockAppAllowed = isMockLocationApp()
+                    if (event == Lifecycle.Event.ON_RESUME) {
+                        val allowed = isMockLocationApp()
+                        mockAppAllowed = allowed
+                        if (allowed && actionError == getString(R.string.error_select_mock_app)) {
+                            actionError = null
+                        }
+                    }
                 }
                 lifecycle.addObserver(observer)
                 onDispose { lifecycle.removeObserver(observer) }
@@ -69,8 +85,12 @@ class MainActivity : ComponentActivity() {
 
             LaunchedEffect(preferences) {
                 while (true) {
-                    active = preferences.getBoolean(MockLocationService.KEY_ACTIVE, false)
-                    serviceError = preferences.getString(MockLocationService.KEY_ERROR, null)
+                    active = MockLocationService.isRunning
+                    stopping = MockLocationService.isStopping
+                    val latestError = preferences.getString(MockLocationService.KEY_ERROR, null)
+                    serviceError = latestError
+                    if (stopping) starting = false
+                    if (active || latestError != null) starting = false
                     delay(500)
                 }
             }
@@ -82,32 +102,48 @@ class MainActivity : ComponentActivity() {
                     initialLongitude = preferences.getString(MockLocationService.KEY_LONGITUDE, "14.4378")
                         ?: "14.4378",
                     active = active,
+                    starting = starting,
+                    stopping = stopping,
                     mockAppAllowed = mockAppAllowed,
                     serviceError = actionError ?: serviceError,
                     onStart = { coordinates ->
                         if (!mockAppAllowed) {
                             actionError = getString(R.string.error_select_mock_app)
                             openDeveloperOptions()
-                        } else if (
-                            ContextCompat.checkSelfPermission(
-                                this,
-                                Manifest.permission.ACCESS_FINE_LOCATION,
-                            ) == PackageManager.PERMISSION_GRANTED
-                        ) {
-                            start(coordinates)
                         } else {
-                            pendingCoordinates = coordinates
                             val permissions = buildList {
-                                add(Manifest.permission.ACCESS_COARSE_LOCATION)
-                                add(Manifest.permission.ACCESS_FINE_LOCATION)
-                                if (android.os.Build.VERSION.SDK_INT >= 33) {
+                                if (
+                                    ContextCompat.checkSelfPermission(
+                                        this@MainActivity,
+                                        Manifest.permission.ACCESS_COARSE_LOCATION,
+                                    ) != PackageManager.PERMISSION_GRANTED
+                                ) {
+                                    add(Manifest.permission.ACCESS_COARSE_LOCATION)
+                                }
+                                if (
+                                    android.os.Build.VERSION.SDK_INT >= 33 &&
+                                    ContextCompat.checkSelfPermission(
+                                        this@MainActivity,
+                                        Manifest.permission.POST_NOTIFICATIONS,
+                                    ) != PackageManager.PERMISSION_GRANTED
+                                ) {
                                     add(Manifest.permission.POST_NOTIFICATIONS)
                                 }
-                            }.toTypedArray()
-                            permissionLauncher.launch(permissions)
+                            }
+                            if (permissions.isEmpty()) {
+                                start(coordinates)
+                            } else {
+                                pendingLatitude = coordinates.latitude
+                                pendingLongitude = coordinates.longitude
+                                permissionLauncher.launch(permissions.toTypedArray())
+                            }
                         }
                     },
-                    onStop = { MockLocationService.stop(this) },
+                    onStop = {
+                        starting = false
+                        stopping = true
+                        MockLocationService.stop(this)
+                    },
                     onOpenDeveloperOptions = ::openDeveloperOptions,
                     onOpenVpn = ::openProtonVpn,
                 )

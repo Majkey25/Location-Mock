@@ -26,30 +26,7 @@ class MockLocationService : Service() {
     private lateinit var locationClient: FusedLocationProviderClient
     private var coordinates: Coordinates? = null
     private var stopping = false
-
-    private val publishLocation = object : Runnable {
-        override fun run() {
-            val current = coordinates ?: return
-            if (
-                ContextCompat.checkSelfPermission(
-                    this@MockLocationService,
-                    Manifest.permission.ACCESS_FINE_LOCATION,
-                ) != PackageManager.PERMISSION_GRANTED
-            ) {
-                fail(SecurityException(getString(R.string.error_precise_permission)))
-                return
-            }
-            locationClient.setMockLocation(current.toLocation())
-                .addOnSuccessListener {
-                    if (!stopping) {
-                        setState(active = true, error = null)
-                        updateNotification(current)
-                        handler.postDelayed(this, UPDATE_INTERVAL_MS)
-                    }
-                }
-                .addOnFailureListener(::fail)
-        }
-    }
+    private var generation = 0
 
     override fun onCreate() {
         super.onCreate()
@@ -68,51 +45,91 @@ class MockLocationService : Service() {
                 intent?.getDoubleExtra(EXTRA_LONGITUDE, Double.NaN) ?: Double.NaN,
             )
         }.getOrElse {
-            fail(it)
+            setState(active = false, error = it.message ?: getString(R.string.error_mock_not_available))
+            stopSelf(startId)
+            return START_NOT_STICKY
+        }
+        if (
+            ContextCompat.checkSelfPermission(
+                this,
+                Manifest.permission.ACCESS_COARSE_LOCATION,
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            setState(active = false, error = getString(R.string.error_location_permission))
+            stopSelf(startId)
             return START_NOT_STICKY
         }
 
         stopping = false
         coordinates = requested
-        handler.removeCallbacks(publishLocation)
-        startForeground(
-            NOTIFICATION_ID,
-            notification(getString(R.string.notification_starting)),
-            ServiceInfo.FOREGROUND_SERVICE_TYPE_LOCATION,
-        )
-        if (
-            ContextCompat.checkSelfPermission(
-                this,
-                Manifest.permission.ACCESS_FINE_LOCATION,
-            ) != PackageManager.PERMISSION_GRANTED
-        ) {
-            fail(SecurityException(getString(R.string.error_precise_permission)))
+        val currentGeneration = ++generation
+        handler.removeCallbacksAndMessages(null)
+        try {
+            startForeground(
+                NOTIFICATION_ID,
+                notification(getString(R.string.notification_starting)),
+                ServiceInfo.FOREGROUND_SERVICE_TYPE_LOCATION,
+            )
+        } catch (cause: SecurityException) {
+            setState(active = false, error = cause.message ?: getString(R.string.error_location_permission))
+            stopSelf(startId)
             return START_NOT_STICKY
         }
         locationClient.setMockMode(true)
-            .addOnSuccessListener { if (!stopping) publishLocation.run() }
-            .addOnFailureListener(::fail)
+            .addOnSuccessListener {
+                if (!stopping && currentGeneration == generation) publishLocation(currentGeneration)
+            }
+            .addOnFailureListener { cause ->
+                if (currentGeneration == generation) fail(cause)
+            }
         return START_NOT_STICKY
     }
 
     override fun onDestroy() {
-        handler.removeCallbacks(publishLocation)
+        generation++
+        handler.removeCallbacksAndMessages(null)
         coordinates = null
-        getSharedPreferences(PREFERENCES, MODE_PRIVATE).edit {
-            putBoolean(KEY_ACTIVE, false)
-        }
-        if (!stopping &&
-            ContextCompat.checkSelfPermission(
-                this,
-                Manifest.permission.ACCESS_FINE_LOCATION,
-            ) == PackageManager.PERMISSION_GRANTED
-        ) {
-            runCatching { locationClient.setMockMode(false) }
+        isRunning = false
+        isStopping = false
+        if (!stopping) {
+            try {
+                locationClient.setMockMode(false)
+            } catch (_: SecurityException) {
+                // Permission may be revoked while the service is running.
+            }
         }
         super.onDestroy()
     }
 
     override fun onBind(intent: Intent?): IBinder? = null
+
+    private fun publishLocation(requestGeneration: Int) {
+        if (stopping || requestGeneration != generation) return
+        val current = coordinates ?: return
+        if (
+            ContextCompat.checkSelfPermission(
+                this,
+                Manifest.permission.ACCESS_COARSE_LOCATION,
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            fail(SecurityException(getString(R.string.error_location_permission)))
+            return
+        }
+        locationClient.setMockLocation(current.toLocation())
+            .addOnSuccessListener {
+                if (!stopping && requestGeneration == generation) {
+                    setState(active = true, error = null)
+                    updateNotification(current)
+                    handler.postDelayed(
+                        { publishLocation(requestGeneration) },
+                        UPDATE_INTERVAL_MS,
+                    )
+                }
+            }
+            .addOnFailureListener { cause ->
+                if (requestGeneration == generation) fail(cause)
+            }
+    }
 
     private fun Coordinates.toLocation(): Location = Location(LocationManager.GPS_PROVIDER).apply {
         latitude = this@toLocation.latitude
@@ -136,31 +153,28 @@ class MockLocationService : Service() {
     private fun stopMocking(error: String?) {
         if (stopping) return
         stopping = true
-        handler.removeCallbacks(publishLocation)
+        isStopping = true
+        val stopGeneration = ++generation
+        handler.removeCallbacksAndMessages(null)
         coordinates = null
 
-        val finish = {
+        val finish = finish@{
+            if (stopGeneration != generation) return@finish
+            isStopping = false
             setState(active = false, error = error)
             stopForeground(STOP_FOREGROUND_REMOVE)
             stopSelf()
         }
-        if (
-            ContextCompat.checkSelfPermission(
-                this,
-                Manifest.permission.ACCESS_FINE_LOCATION,
-            ) == PackageManager.PERMISSION_GRANTED
-        ) {
-            runCatching { locationClient.setMockMode(false) }
-                .onSuccess { task -> task.addOnCompleteListener { finish() } }
-                .onFailure { finish() }
-        } else {
+        try {
+            locationClient.setMockMode(false).addOnCompleteListener { finish() }
+        } catch (_: SecurityException) {
             finish()
         }
     }
 
     private fun setState(active: Boolean, error: String?) {
+        isRunning = active
         getSharedPreferences(PREFERENCES, MODE_PRIVATE).edit {
-            putBoolean(KEY_ACTIVE, active)
             putString(KEY_ERROR, error)
         }
     }
@@ -217,10 +231,17 @@ class MockLocationService : Service() {
 
     companion object {
         const val PREFERENCES = "location_mock"
-        const val KEY_ACTIVE = "active"
         const val KEY_ERROR = "error"
         const val KEY_LATITUDE = "latitude"
         const val KEY_LONGITUDE = "longitude"
+
+        @Volatile
+        var isRunning: Boolean = false
+            private set
+
+        @Volatile
+        var isStopping: Boolean = false
+            private set
 
         private const val EXTRA_LATITUDE = "latitude"
         private const val EXTRA_LONGITUDE = "longitude"
@@ -244,9 +265,15 @@ class MockLocationService : Service() {
         }
 
         fun stop(context: Context) {
-            context.startService(
-                Intent(context, MockLocationService::class.java).setAction(ACTION_STOP),
-            )
+            isStopping = true
+            try {
+                context.startService(
+                    Intent(context, MockLocationService::class.java).setAction(ACTION_STOP),
+                )
+            } catch (cause: RuntimeException) {
+                isStopping = false
+                throw cause
+            }
         }
     }
 }

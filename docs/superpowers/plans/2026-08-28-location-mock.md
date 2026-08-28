@@ -4,7 +4,7 @@
 
 **Goal:** Build and release a minimal Android mock-location app with a safe external VPN handoff.
 
-**Architecture:** Compose renders one screen. A foreground service owns Fused Location Provider mock mode. A small validated coordinate type is the only domain model; fixed-size preferences carry status across the activity/service boundary.
+**Architecture:** Compose renders one screen. A foreground service owns Fused Location Provider mock mode. A small validated coordinate type is the only domain model; process-local state reports running/stopping and fixed-size preferences keep coordinates/latest error.
 
 **Tech Stack:** Kotlin 2.3.21, AGP 9.3.2, Gradle 9.7.1, Compose Material 3, Google Play services Location 21.4.0, JUnit 4.
 
@@ -56,7 +56,7 @@
 - Consumes validated latitude/longitude extras.
 - Produces explicit `start(context, coordinates)` and `stop(context)` companion methods plus fixed preference keys for UI status.
 
-- [ ] Declare only coarse/fine location, foreground service/location, and notification permissions.
+- [ ] Declare only coarse location, mock location, foreground service/location, and notification permissions.
 - [ ] Start foreground notification before entering mock mode.
 - [ ] Call `setMockMode(true)`, then publish timestamped mock fixes every 1000 ms.
 - [ ] On Stop/destroy remove callbacks, call `setMockMode(false)`, clear fixed status preferences, and stop foreground service.
@@ -68,10 +68,10 @@
 - Create: `MainActivity.kt`, `LocationMockScreen.kt`, `AppTheme.kt`, string/theme/icon resources
 
 **Interfaces:**
-- Consumes `Coordinates.parse`, service start/stop methods, and service status preferences.
+- Consumes `Coordinates.parse`, service start/stop methods, process-local service state, and bounded coordinate/error preferences.
 
 - [ ] Build centered responsive screen with status, two outlined numeric fields, four city presets, and one Start/Stop button.
-- [ ] Request precise location only at user Start. Request notification permission where available.
+- [ ] Request coarse location only at user Start. Request notification permission independently where available.
 - [ ] Detect mock-location app operation. Open Developer options when not authorized.
 - [ ] Add Setup, Privacy, About overflow dialogs.
 - [ ] Add IP section that opens installed Proton VPN or its Google Play listing and states `No affiliation`.
