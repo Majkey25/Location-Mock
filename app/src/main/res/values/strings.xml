@@ -42,7 +42,7 @@
     <string name="privacy_title">Privacy</string>
     <string name="privacy_body">Location Mock has no Internet permission. Coordinates stay on this device. The app has no ads, analytics, account, or browsing access.</string>
     <string name="about_title">About Location Mock</string>
-    <string name="about_body">Version 1.0.0\n\nFree and open source. Built for location testing and travel preview.</string>
+    <string name="about_body">Version 1.0.1-rc.1\n\nFree and open source. Built for location testing and travel preview.</string>
     <string name="close">Close</string>
     <string name="error_select_mock_app">Select Location Mock as the mock location app first.</string>
     <string name="error_location_permission">Location permission is required while mock location is active.</string>

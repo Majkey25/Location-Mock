@@ -19,8 +19,8 @@ android {
         applicationId = "com.majkeylab.locationmock"
         minSdk = 29
         targetSdk = 37
-        versionCode = 1
-        versionName = "1.0.0"
+        versionCode = 2
+        versionName = "1.0.1-rc.1"
     }
 
     signingConfigs {
@@ -52,6 +52,12 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro",
             )
+        }
+        create("githubRelease") {
+            initWith(getByName("release"))
+            applicationIdSuffix = ".github"
+            matchingFallbacks += listOf("release")
+            signingConfig = signingConfigs.findByName("release")
         }
     }
 

@@ -7,7 +7,8 @@ Build a free, offline-first Android app that keeps a user-selected mock GPS loca
 ## Product scope
 
 - App label: `Location Mock`
-- Application ID and namespace: `com.majkeylab.locationmock`
+- Play application ID and namespace: `com.majkeylab.locationmock`
+- GitHub application ID: `com.majkeylab.locationmock.github`
 - Android 10 minimum, Android 17 target, and Android 16 compatibility
 - English-only UI
 - No ads, analytics, account, backend, map SDK, or `INTERNET` permission
@@ -37,6 +38,7 @@ Build a free, offline-first Android app that keeps a user-selected mock GPS loca
 - Unit tests: `./gradlew.bat testDebugUnitTest --console=plain`
 - Lint: `./gradlew.bat lintDebug --console=plain`
 - Debug build: `./gradlew.bat assembleDebug --console=plain`
+- GitHub APK: `./gradlew.bat assembleGithubRelease --console=plain`
 - Release bundle: `./gradlew.bat bundleRelease --console=plain`
 - Device install: `adb -s <S25-ULTRA-SERIAL> install --user 0 -r app/build/outputs/apk/debug/app-debug.apk`
 - Device launch: `adb -s <S25-ULTRA-SERIAL> shell am start -n com.majkeylab.locationmock/.MainActivity`

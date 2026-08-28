@@ -3,7 +3,7 @@
 Minimal Android mock-location control. Free, local, and without ads or tracking.
 
 [![Android CI](https://github.com/Majkey25/Location-Mock/actions/workflows/android.yml/badge.svg)](https://github.com/Majkey25/Location-Mock/actions/workflows/android.yml)
-[![Release](https://img.shields.io/github/v/release/Majkey25/Location-Mock?include_prereleases&sort=semver)](https://github.com/Majkey25/Location-Mock/releases/tag/v1.0.0)
+[![Release](https://img.shields.io/github/v/release/Majkey25/Location-Mock?include_prereleases&sort=semver)](https://github.com/Majkey25/Location-Mock/releases/tag/v1.0.1-rc.1)
 
 ![Location Mock banner](docs/play-store/assets/github-social-preview.png)
 
@@ -39,8 +39,21 @@ Coordinates stay in fixed-size local preferences. No location history is kept. A
 Requirements: JDK 17 and Android SDK 37.
 
 ```powershell
-.\gradlew.bat testDebugUnitTest lintDebug assembleDebug bundleRelease --console=plain
+.\gradlew.bat testDebugUnitTest lintDebug lintGithubRelease assembleDebug assembleGithubRelease bundleRelease --console=plain
 ```
+
+## Distributions
+
+| Channel | Application ID | Artifact |
+|---|---|---|
+| Google Play | `com.majkeylab.locationmock` | AAB |
+| GitHub | `com.majkeylab.locationmock.github` | APK |
+
+Google Play re-signs its APKs. The separate GitHub package avoids signature conflicts and makes each channel independently updateable.
+
+### Migration from the first prerelease
+
+The original `v1.0.0` GitHub APK used the Play package ID. Uninstall that sideload before installing Google Play. The corrected GitHub package is a separate fresh install and does not migrate saved coordinates or settings from `v1.0.0`.
 
 ## License
 

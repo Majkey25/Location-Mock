@@ -8,6 +8,8 @@ The app uses Android approximate-location permission only while its user-started
 
 Location Mock has no Internet permission, advertising SDK, analytics SDK, account system, or maintainer-operated server.
 
+Google Play uses `com.majkeylab.locationmock`. The GitHub APK uses `com.majkeylab.locationmock.github`. Both variants have the same local-only data behavior.
+
 The **Open Proton VPN** button starts a separately installed Proton VPN app or opens its Google Play listing. Proton VPN is independent software governed by Proton AG's privacy policy and terms. Location Mock does not receive VPN traffic or data.
 
 Questions: [majkeylab@gmail.com](mailto:majkeylab@gmail.com)

@@ -12,7 +12,7 @@
 
 ## Global constraints
 
-- Package must stay `com.majkeylab.locationmock`.
+- Play package must stay `com.majkeylab.locationmock`; GitHub APK uses `com.majkeylab.locationmock.github`.
 - UI and store copy must stay English.
 - No backend, map SDK, ads, analytics, account, or `INTERNET` permission.
 - ADB must target Galaxy S25 Ultra only.
