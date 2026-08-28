@@ -8,7 +8,7 @@ Build a free, offline-first Android app that keeps a user-selected mock GPS loca
 
 - App label: `Location Mock`
 - Application ID and namespace: `com.majkeylab.locationmock`
-- Android 10 minimum, Android 16 target
+- Android 10 minimum, Android 17 target; verified on Android 16 target phone
 - English-only UI
 - No ads, analytics, account, backend, map SDK, or `INTERNET` permission
 - One screen: current status, latitude/longitude fields, city presets, Start/Stop action, setup guidance, and IP/VPN handoff
@@ -26,9 +26,9 @@ Build a free, offline-first Android app that keeps a user-selected mock GPS loca
 ## Tech stack
 
 - Kotlin 2.3.21, JVM 17
-- Android Gradle Plugin 8.13.2, Gradle 8.13
-- compile/target SDK 36, min SDK 29
-- Jetpack Compose with BOM 2026.06.01 and Material 3
+- Android Gradle Plugin 9.3.2, Gradle 9.7.1
+- compile/target SDK 37, min SDK 29
+- Jetpack Compose with BOM 2026.08.00 and Material 3
 - Google Play services Location 21.4.0
 - JUnit 4 for coordinate validation
 
@@ -71,4 +71,3 @@ Build a free, offline-first Android app that keeps a user-selected mock GPS loca
 - App contains no `INTERNET` permission and sends no data.
 - GitHub contains source, CI, privacy, listing assets, signed release artifacts, and release notes.
 - Google Play submission is completed when console access and review gates permit it; external review time is reported, never called complete early.
-

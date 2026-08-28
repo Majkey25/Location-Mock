@@ -6,7 +6,7 @@
 
 **Architecture:** Compose renders one screen. A foreground service owns Fused Location Provider mock mode. A small validated coordinate type is the only domain model; fixed-size preferences carry status across the activity/service boundary.
 
-**Tech Stack:** Kotlin 2.3.21, AGP 8.13.2, Gradle 8.13, Compose Material 3, Google Play services Location 21.4.0, JUnit 4.
+**Tech Stack:** Kotlin 2.3.21, AGP 9.3.2, Gradle 9.7.1, Compose Material 3, Google Play services Location 21.4.0, JUnit 4.
 
 **Spec:** `docs/superpowers/specs/2026-08-28-location-mock-design.md`
 
