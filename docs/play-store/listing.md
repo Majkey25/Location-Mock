@@ -14,11 +14,13 @@ Set a test GPS location with clear controls and no tracking.
 
 Location Mock is a small tool for Android location testing and travel preview.
 
-Enter latitude and longitude or choose Prague, London, New York, or Tokyo. Start the mock location, switch to another app, and stop it from Location Mock or, when notifications are allowed, its persistent notification.
+Search for an address or place, enter latitude and longitude, or choose Prague, London, New York, or Tokyo. Start the mock location, switch to another app, and stop it from Location Mock or, when notifications are allowed, its persistent notification.
+
+Address results come from Android's device geocoding service and may be unavailable or inaccurate. Queries are not stored as history or sent to a maintainer server.
 
 One-time setup uses Android Developer options. Android identifies injected coordinates as mock, so another app may detect or reject them.
 
-GPS coordinates and IP location are different. Location Mock does not operate a VPN or inspect network traffic. Its optional VPN button opens the separate Proton VPN app or its Google Play listing.
+GPS coordinates and IP location are different. The Google Play build does not operate a VPN or inspect network traffic.
 
 Privacy:
 - No account
@@ -32,7 +34,7 @@ Changing GPS or IP location does not guarantee different prices or availability.
 
 ## Release notes
 
-Initial release with validated coordinates, city presets, persistent mock location, notification Stop action, local-only storage, and a separate VPN handoff.
+Address search with validated coordinates, city presets, persistent mock location, notification Stop action, and local-only storage.
 
 ## Play Console declarations
 

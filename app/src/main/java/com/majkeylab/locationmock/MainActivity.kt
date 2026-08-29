@@ -20,7 +20,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.core.content.ContextCompat
-import androidx.core.net.toUri
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import kotlinx.coroutines.delay
@@ -32,6 +31,7 @@ class MainActivity : ComponentActivity() {
             val preferences = remember {
                 getSharedPreferences(MockLocationService.PREFERENCES, MODE_PRIVATE)
             }
+            val addressSearchRepository = remember { AddressSearchRepository(this) }
             var active by remember { mutableStateOf(MockLocationService.isRunning) }
             var starting by rememberSaveable { mutableStateOf(false) }
             var stopping by remember { mutableStateOf(MockLocationService.isStopping) }
@@ -144,8 +144,8 @@ class MainActivity : ComponentActivity() {
                         stopping = true
                         MockLocationService.stop(this)
                     },
+                    onAddressSearch = addressSearchRepository::search,
                     onOpenDeveloperOptions = ::openDeveloperOptions,
-                    onOpenVpn = ::openProtonVpn,
                 )
             }
         }
@@ -166,23 +166,5 @@ class MainActivity : ComponentActivity() {
         } catch (_: ActivityNotFoundException) {
             startActivity(Intent(Settings.ACTION_SETTINGS))
         }
-    }
-
-    private fun openProtonVpn() {
-        packageManager.getLaunchIntentForPackage(PROTON_PACKAGE)?.let {
-            startActivity(it)
-            return
-        }
-        try {
-            startActivity(Intent(Intent.ACTION_VIEW, "market://details?id=$PROTON_PACKAGE".toUri()))
-        } catch (_: ActivityNotFoundException) {
-            startActivity(Intent(Intent.ACTION_VIEW, PROTON_PLAY_URL.toUri()))
-        }
-    }
-
-    companion object {
-        private const val PROTON_PACKAGE = "ch.protonvpn.android"
-        private const val PROTON_PLAY_URL =
-            "https://play.google.com/store/apps/details?id=ch.protonvpn.android"
     }
 }

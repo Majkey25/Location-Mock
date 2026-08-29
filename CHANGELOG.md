@@ -1,5 +1,18 @@
 # Changelog
 
+## 1.1.0-rc.1 - 2026-08-29
+
+### Added
+
+- Address and place search through Android's device geocoder.
+- Embedded WireGuard import, Connect, and Disconnect in debug and GitHub builds.
+- Android Keystore AES-GCM protection for the imported WireGuard configuration.
+
+### Changed
+
+- Removed the external VPN handoff.
+- Kept the Google Play release free of VPN services and WireGuard dependencies.
+
 ## 1.0.1-rc.1 - 2026-08-28
 
 ### Changed
@@ -14,5 +27,4 @@
 - Persistent mock GPS location with validated coordinates.
 - Four city presets and one-tap Stop action.
 - English Material 3 interface with Setup, Privacy, and About menus.
-- Trusted external VPN handoff without handling network traffic.
 - Local-only storage, Android backup disabled, and no Internet permission.

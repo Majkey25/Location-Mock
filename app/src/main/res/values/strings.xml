@@ -17,6 +17,12 @@
     <string name="status_setup">Setup required</string>
     <string name="coordinates_title">Coordinates</string>
     <string name="coordinates_help">Enter decimal coordinates or choose a preset.</string>
+    <string name="address_search_label">Search address or place</string>
+    <string name="address_search_action">Search</string>
+    <string name="address_searching">Searching…</string>
+    <string name="address_no_results">No addresses found.</string>
+    <string name="address_search_failed">Address search failed.</string>
+    <string name="address_help">Results come from the device geocoding service and may be unavailable or inaccurate.</string>
     <string name="latitude">Latitude</string>
     <string name="longitude">Longitude</string>
     <string name="preset_prague">Prague</string>
@@ -31,10 +37,6 @@
     <string name="stopping_help">Finishing mock-location cleanup.</string>
     <string name="inactive_help">Select this app in Developer options before starting.</string>
     <string name="ready_help">Ready to start.</string>
-    <string name="ip_title">Change IP location</string>
-    <string name="ip_body">GPS coordinates do not change your IP address. Proton VPN offers a separate free plan with unlimited data.</string>
-    <string name="open_proton">Open Proton VPN</string>
-    <string name="vpn_disclaimer">No affiliation with Proton AG. Its free plan chooses from available free servers and may limit country selection.</string>
     <string name="pricing_note">Sites may also use your account, cookies, payment country, and mock-location detection. Different prices are not guaranteed.</string>
     <string name="setup_title">One-time setup</string>
     <string name="setup_body">1. Open Developer options.\n2. Tap Select mock location app.\n3. Choose Location Mock.\n4. Return here and tap Start.</string>
@@ -42,7 +44,7 @@
     <string name="privacy_title">Privacy</string>
     <string name="privacy_body">Location Mock has no Internet permission. Coordinates stay on this device. The app has no ads, analytics, account, or browsing access.</string>
     <string name="about_title">About Location Mock</string>
-    <string name="about_body">Version 1.0.1-rc.1\n\nFree and open source. Built for location testing and travel preview.</string>
+    <string name="about_body">Version 1.1.0-rc.1\n\nFree and open source. Built for location testing and travel preview.</string>
     <string name="close">Close</string>
     <string name="error_select_mock_app">Select Location Mock as the mock location app first.</string>
     <string name="error_location_permission">Location permission is required while mock location is active.</string>

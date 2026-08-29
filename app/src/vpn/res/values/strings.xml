@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="privacy_body">Location Mock has Internet access only for the user-configured WireGuard tunnel. It has no ads, analytics, account, or browsing access. Coordinates stay on this device.</string>
+    <string name="vpn_title">Private network</string>
+    <string name="vpn_body">Import a trusted WireGuard configuration. Location Mock provides the client but does not operate a VPN server.</string>
+    <string name="vpn_import">Import configuration</string>
+    <string name="vpn_replace">Replace configuration</string>
+    <string name="vpn_remove">Remove configuration</string>
+    <string name="vpn_connect">Connect</string>
+    <string name="vpn_disconnect">Disconnect</string>
+    <string name="vpn_no_config">No configuration</string>
+    <string name="vpn_disconnected">Disconnected</string>
+    <string name="vpn_connecting">Connecting…</string>
+    <string name="vpn_connected">Connected</string>
+    <string name="vpn_disconnecting">Disconnecting…</string>
+    <string name="vpn_error">VPN error</string>
+    <string name="vpn_permission_denied">VPN permission was not granted.</string>
+    <string name="vpn_import_failed">Could not import the WireGuard configuration.</string>
+    <string name="vpn_disclosure_title">Before connecting</string>
+    <string name="vpn_disclosure_body">Location Mock routes device traffic matched by the imported WireGuard configuration to its remote endpoint. Location Mock does not operate that server and does not inspect or log traffic. Continue only with a configuration from a server you trust.</string>
+    <string name="vpn_disclosure_accept">Continue</string>
+    <string name="vpn_disclosure_cancel">Cancel</string>
+</resources>

@@ -19,8 +19,8 @@ android {
         applicationId = "com.majkeylab.locationmock"
         minSdk = 29
         targetSdk = 37
-        versionCode = 2
-        versionName = "1.0.1-rc.1"
+        versionCode = 3
+        versionName = "1.1.0-rc.1"
     }
 
     signingConfigs {
@@ -61,6 +61,19 @@ android {
         }
     }
 
+    sourceSets {
+        getByName("debug") {
+            kotlin.directories.add(project.file("src/vpn/java").absolutePath)
+            res.directories.add(project.file("src/vpn/res").absolutePath)
+            manifest.srcFile("src/vpn/AndroidManifest.xml")
+        }
+        getByName("githubRelease") {
+            kotlin.directories.add(project.file("src/vpn/java").absolutePath)
+            res.directories.add(project.file("src/vpn/res").absolutePath)
+            manifest.srcFile("src/vpn/AndroidManifest.xml")
+        }
+    }
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
@@ -87,6 +100,9 @@ dependencies {
     implementation("androidx.compose.ui:ui-tooling-preview")
     implementation("androidx.compose.material3:material3")
     implementation("androidx.compose.material:material-icons-core")
+
+    debugImplementation("com.wireguard.android:tunnel:1.0.20260102")
+    add("githubReleaseImplementation", "com.wireguard.android:tunnel:1.0.20260102")
 
     testImplementation("junit:junit:4.13.2")
     testImplementation("org.jetbrains.kotlin:kotlin-test:2.3.21")

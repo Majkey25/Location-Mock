@@ -24,6 +24,7 @@ import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.AssistChip
 import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -42,6 +43,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -51,6 +53,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.launch
 
 private data class LocationPreset(
     val name: String,
@@ -71,14 +75,22 @@ fun LocationMockScreen(
     serviceError: String?,
     onStart: (Coordinates) -> Unit,
     onStop: () -> Unit,
+    onAddressSearch: suspend (String) -> List<AddressSearchResult>,
     onOpenDeveloperOptions: () -> Unit,
-    onOpenVpn: () -> Unit,
 ) {
     var latitude by rememberSaveable { mutableStateOf(initialLatitude) }
     var longitude by rememberSaveable { mutableStateOf(initialLongitude) }
+    var addressQuery by rememberSaveable { mutableStateOf("") }
+    var addressResults by remember { mutableStateOf(emptyList<AddressSearchResult>()) }
+    var addressError by remember { mutableStateOf<String?>(null) }
+    var addressSearching by remember { mutableStateOf(false) }
     var inputError by remember { mutableStateOf<String?>(null) }
     var menuOpen by remember { mutableStateOf(false) }
     var dialog by remember { mutableStateOf<InfoDialog?>(null) }
+    val scope = rememberCoroutineScope()
+    val noAddressResults = stringResource(R.string.address_no_results)
+    val addressSearchFailed = stringResource(R.string.address_search_failed)
+    val inputEnabled = !active && !starting && !stopping && !addressSearching
 
     Scaffold(
         topBar = {
@@ -144,6 +156,85 @@ fun LocationMockScreen(
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
                 Spacer(Modifier.height(16.dp))
+                OutlinedTextField(
+                    value = addressQuery,
+                    onValueChange = {
+                        addressQuery = it
+                        addressError = null
+                    },
+                    label = { Text(stringResource(R.string.address_search_label)) },
+                    singleLine = true,
+                    enabled = inputEnabled,
+                    modifier = Modifier.fillMaxWidth(),
+                )
+                Spacer(Modifier.height(10.dp))
+                OutlinedButton(
+                    onClick = {
+                        addressSearching = true
+                        addressError = null
+                        addressResults = emptyList()
+                        scope.launch {
+                            try {
+                                addressResults = onAddressSearch(addressQuery)
+                                if (addressResults.isEmpty()) addressError = noAddressResults
+                            } catch (cause: CancellationException) {
+                                throw cause
+                            } catch (cause: Exception) {
+                                addressError = cause.message ?: addressSearchFailed
+                            } finally {
+                                addressSearching = false
+                            }
+                        }
+                    },
+                    enabled = inputEnabled,
+                    modifier = Modifier.fillMaxWidth(),
+                ) {
+                    if (addressSearching) {
+                        CircularProgressIndicator(
+                            modifier = Modifier.size(20.dp),
+                            strokeWidth = 2.dp,
+                        )
+                        Spacer(Modifier.width(10.dp))
+                    }
+                    Text(
+                        stringResource(
+                            if (addressSearching) R.string.address_searching else R.string.address_search_action,
+                        ),
+                    )
+                }
+                Spacer(Modifier.height(8.dp))
+                Text(
+                    text = stringResource(R.string.address_help),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+                addressError?.let {
+                    Spacer(Modifier.height(8.dp))
+                    Text(it, color = MaterialTheme.colorScheme.error, style = MaterialTheme.typography.bodyMedium)
+                }
+                addressResults.forEach { result ->
+                    TextButton(
+                        onClick = {
+                            latitude = result.coordinates.latitude.toString()
+                            longitude = result.coordinates.longitude.toString()
+                            addressResults = emptyList()
+                            addressError = null
+                            inputError = null
+                        },
+                        enabled = inputEnabled,
+                        modifier = Modifier.fillMaxWidth(),
+                    ) {
+                        Column(modifier = Modifier.fillMaxWidth()) {
+                            Text(result.label, fontWeight = FontWeight.Medium)
+                            Text(
+                                "${result.coordinates.latitude}, ${result.coordinates.longitude}",
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            )
+                        }
+                    }
+                }
+                Spacer(Modifier.height(16.dp))
                 Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                     OutlinedTextField(
                         value = latitude,
@@ -151,7 +242,7 @@ fun LocationMockScreen(
                         label = { Text(stringResource(R.string.latitude)) },
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
                         singleLine = true,
-                        enabled = !active && !starting && !stopping,
+                        enabled = inputEnabled,
                         modifier = Modifier.weight(1f),
                     )
                     OutlinedTextField(
@@ -160,12 +251,12 @@ fun LocationMockScreen(
                         label = { Text(stringResource(R.string.longitude)) },
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
                         singleLine = true,
-                        enabled = !active && !starting && !stopping,
+                        enabled = inputEnabled,
                         modifier = Modifier.weight(1f),
                     )
                 }
                 Spacer(Modifier.height(12.dp))
-                Presets(enabled = !active && !starting && !stopping, onSelect = {
+                Presets(enabled = inputEnabled, onSelect = {
                     latitude = it.latitude.toString()
                     longitude = it.longitude.toString()
                     inputError = null
@@ -215,24 +306,7 @@ fun LocationMockScreen(
                 Spacer(Modifier.height(28.dp))
                 HorizontalDivider()
                 Spacer(Modifier.height(24.dp))
-                Text(
-                    text = stringResource(R.string.ip_title),
-                    style = MaterialTheme.typography.titleLarge,
-                    fontWeight = FontWeight.SemiBold,
-                )
-                Spacer(Modifier.height(6.dp))
-                Text(stringResource(R.string.ip_body), style = MaterialTheme.typography.bodyMedium)
-                Spacer(Modifier.height(14.dp))
-                OutlinedButton(onClick = onOpenVpn, modifier = Modifier.fillMaxWidth()) {
-                    Text(stringResource(R.string.open_proton))
-                }
-                Spacer(Modifier.height(8.dp))
-                Text(
-                    stringResource(R.string.vpn_disclaimer),
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                )
-                Spacer(Modifier.height(20.dp))
+                VpnFeatureSection()
                 Surface(
                     color = MaterialTheme.colorScheme.surfaceVariant,
                     shape = RoundedCornerShape(12.dp),
