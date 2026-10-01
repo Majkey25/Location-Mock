@@ -105,7 +105,7 @@ dependencies {
     add("githubReleaseImplementation", "com.wireguard.android:tunnel:1.0.20260102")
 
     testImplementation("junit:junit:4.13.2")
-    testImplementation("org.jetbrains.kotlin:kotlin-test:2.3.21")
+    testImplementation("org.jetbrains.kotlin:kotlin-test:2.4.20")
 
     debugImplementation("androidx.compose.ui:ui-tooling")
 }
