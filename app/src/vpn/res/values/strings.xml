@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="privacy_body">Location Mock has Internet access only for the user-configured WireGuard tunnel. It has no ads, analytics, account, or browsing access. Coordinates stay on this device.</string>
+    <string name="privacy_body">Selected coordinates stay on this device and are supplied to Android as a mock location. Other apps with location access can receive them. Address searches go to the device geocoding provider, which may use the network. The WireGuard tunnel sends matching device traffic to your chosen server. There are no ads, analytics, accounts, or maintainer traffic logs. Remove configuration deletes the stored VPN configuration; clear app storage or uninstall to remove all local app data.</string>
     <string name="vpn_title">Private network</string>
     <string name="vpn_body">Import a trusted WireGuard configuration. Location Mock provides the client but does not operate a VPN server.</string>
     <string name="vpn_import">Import configuration</string>

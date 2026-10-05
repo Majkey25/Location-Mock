@@ -19,8 +19,8 @@ android {
         applicationId = "com.majkeylab.locationmock"
         minSdk = 29
         targetSdk = 37
-        versionCode = 3
-        versionName = "1.1.0-rc.1"
+        versionCode = 4
+        versionName = "1.1.0-rc.2"
     }
 
     signingConfigs {

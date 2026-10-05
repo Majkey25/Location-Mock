@@ -16,7 +16,7 @@ Location Mock is a small tool for Android location testing and travel preview.
 
 Search for an address or place, enter latitude and longitude, or choose Prague, London, New York, or Tokyo. Start the mock location, switch to another app, and stop it from Location Mock or, when notifications are allowed, its persistent notification.
 
-Address results come from Android's device geocoding service and may be unavailable or inaccurate. Queries are not stored as history or sent to a maintainer server.
+When you select Search, your query goes to Android's device geocoding provider, which may contact its network backend. Results may be unavailable or inaccurate. Queries are not stored as persistent history or sent to a maintainer server. Use coordinates or presets to avoid sending a search query.
 
 One-time setup uses Android Developer options. Android identifies injected coordinates as mock, so another app may detect or reject them.
 
@@ -42,10 +42,11 @@ Address search with validated coordinates, city presets, persistent mock locatio
 - Ads: No
 - App access: All features available without an account
 - Target audience: 18 and over
-- Data collected: None
-- Data shared: None
+- Maintainer-operated data collection or sharing backend: None
+- Address search: The device geocoding provider receives the query and may use its network backend. Review provider processing against the current Data safety form before declaring that no data leaves the device; lack of Internet permission alone does not prove this.
 - Approximate location permission: Used on device for the foreground mock-location service; not collected or shared
 - Privacy policy: `https://majkey25.github.io/Location-Mock/privacy.html`
+- Terms, costs and notices: `https://majkey25.github.io/Location-Mock/terms.html`
 - Content rating: Utility; no objectionable content
 - Government app: No
 - Financial features: No

@@ -49,6 +49,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
@@ -396,6 +397,8 @@ private fun InfoDialog(
     onDismiss: () -> Unit,
     onOpenDeveloperOptions: () -> Unit,
 ) {
+    val uriHandler = LocalUriHandler.current
+    var linkError by remember(selected) { mutableStateOf(false) }
     val title = when (selected) {
         InfoDialog.SETUP -> R.string.setup_title
         InfoDialog.PRIVACY -> R.string.privacy_title
@@ -409,7 +412,27 @@ private fun InfoDialog(
     AlertDialog(
         onDismissRequest = onDismiss,
         title = { Text(stringResource(title)) },
-        text = { Text(stringResource(body)) },
+        text = {
+            Column(Modifier.verticalScroll(rememberScrollState())) {
+                Text(stringResource(body))
+                if (selected != InfoDialog.SETUP) {
+                    TextButton(onClick = {
+                        val page = if (selected == InfoDialog.PRIVACY) "privacy.html" else "terms.html"
+                        linkError = runCatching {
+                            uriHandler.openUri("https://majkey25.github.io/Location-Mock/$page")
+                        }.isFailure
+                    }) {
+                        Text(stringResource(
+                            if (selected == InfoDialog.PRIVACY) R.string.full_privacy_policy
+                            else R.string.terms_and_notices,
+                        ))
+                    }
+                    if (linkError) {
+                        Text(stringResource(R.string.policy_link_error), color = MaterialTheme.colorScheme.error)
+                    }
+                }
+            }
+        },
         confirmButton = {
             if (selected == InfoDialog.SETUP) {
                 Button(onClick = { onDismiss(); onOpenDeveloperOptions() }) {

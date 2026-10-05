@@ -22,7 +22,7 @@
     <string name="address_searching">Searching…</string>
     <string name="address_no_results">No addresses found.</string>
     <string name="address_search_failed">Address search failed.</string>
-    <string name="address_help">Results come from the device geocoding service and may be unavailable or inaccurate.</string>
+    <string name="address_help">Search sends your query to the device geocoding provider, which may use the network. Results may be unavailable or inaccurate. Enter coordinates instead to avoid an address search.</string>
     <string name="latitude">Latitude</string>
     <string name="longitude">Longitude</string>
     <string name="preset_prague">Prague</string>
@@ -42,9 +42,12 @@
     <string name="setup_body">1. Open Developer options.\n2. Tap Select mock location app.\n3. Choose Location Mock.\n4. Return here and tap Start.</string>
     <string name="open_developer_options">Open Developer options</string>
     <string name="privacy_title">Privacy</string>
-    <string name="privacy_body">Location Mock has no Internet permission. Coordinates stay on this device. The app has no ads, analytics, account, or browsing access.</string>
+    <string name="privacy_body">Selected coordinates stay on this device and are supplied to Android as a mock location. Other apps with location access can receive them. Address searches go to the device geocoding provider, which may use the network. The Play build has no Internet permission, ads, analytics, account, or VPN. Clear app storage or uninstall to remove local data.</string>
+    <string name="full_privacy_policy">Full privacy policy</string>
+    <string name="terms_and_notices">Terms and third-party notices</string>
+    <string name="policy_link_error">Could not open the browser. Policies are at https://majkey25.github.io/Location-Mock/privacy.html</string>
     <string name="about_title">About Location Mock</string>
-    <string name="about_body">Version 1.1.0-rc.1\n\nFree and open source. Built for location testing and travel preview.</string>
+    <string name="about_body">Version 1.1.0-rc.2\n\nFree and open source. Built for location testing and travel preview.</string>
     <string name="close">Close</string>
     <string name="error_select_mock_app">Select Location Mock as the mock location app first.</string>
     <string name="error_location_permission">Location permission is required while mock location is active.</string>

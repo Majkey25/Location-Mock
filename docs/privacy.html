@@ -4,25 +4,37 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>Location Mock privacy policy</title>
-  <style>
-    body { margin: 0; background: #f7faf9; color: #15211f; font: 17px/1.6 system-ui, sans-serif; }
-    main { max-width: 720px; margin: auto; padding: 48px 24px; }
-    h1 { color: #005f59; line-height: 1.15; }
-    a { color: #006a64; }
-  </style>
+  <link rel="stylesheet" href="site.css">
 </head>
 <body>
-  <main>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <nav aria-label="Policies"><a href="privacy.html" aria-current="page">Privacy</a><a href="terms.html">Terms, costs and notices</a></nav>
+  <main id="main" tabindex="-1">
     <h1>Location Mock privacy policy</h1>
-    <p>Effective August 29, 2026.</p>
-    <p>Location Mock does not collect, transmit, sell, or share personal data.</p>
-    <p>Android approximate-location permission is used only while the user-started foreground service supplies mock coordinates. Selected coordinates and the latest service error remain in fixed-size local app preferences. No location history is kept. Android backup and device transfer are disabled.</p>
+    <p>Updated October 5, 2026.</p>
+    <p>Location Mock is published as Majkey by Matěj Teplý. Contact <a href="mailto:majkeylab@gmail.com">majkeylab@gmail.com</a> for support or questions about personal information handled by the maintainer.</p>
+    <h2>Coordinates and device permissions</h2>
+    <p>Android approximate-location permission is used while the user-started foreground service supplies mock coordinates to Android and Google Play services Location. Other apps with location access can receive these coordinates. Selected coordinates and the latest service error remain in fixed-size local app preferences. No location history is kept. Android backup and device transfer are disabled.</p>
     <p>The app has no advertising, analytics, account system, or maintainer-operated server. The Google Play build has no Internet permission or VPN service.</p>
-    <p>Address searches may be processed by Android's device geocoding service. Location Mock does not send address queries to a maintainer server or keep search history. Geocoding availability and accuracy are not guaranteed.</p>
+    <h2>Optional address searches</h2>
+    <p>When you select Search, your query is passed to Android's device geocoding provider. That system service may contact its network backend even though the Play app has no Internet permission. The provider receives the query and may process network information such as your IP address under its own privacy policy. The provider depends on your device; for Google services see <a href="https://policies.google.com/privacy">Google's privacy policy</a>. Use coordinates or presets if you do not want to send a search query.</p>
+    <p>Location Mock does not send address queries to a maintainer server or keep persistent search history. Geocoding availability and accuracy are not guaranteed. Search text can remain in Android's temporary activity state until you clear it or close the task.</p>
+    <h2>GitHub distribution and WireGuard</h2>
     <p>Google Play uses <code>com.majkeylab.locationmock</code>. The GitHub APK uses <code>com.majkeylab.locationmock.github</code> and includes an embedded WireGuard client.</p>
-    <p>If a user imports a WireGuard configuration in the GitHub build, Location Mock validates it and encrypts it in app-private storage using AES-GCM and a non-exportable Android Keystore key. Private keys and endpoints are not written to logs.</p>
+    <p>If a user imports a WireGuard configuration in the GitHub build, Location Mock validates it and encrypts it in app-private storage using AES-GCM and a non-exportable Android Keystore key. The maintainer does not receive the imported configuration.</p>
     <p>While connected, Android routes traffic matching the imported configuration to its remote WireGuard endpoint. Location Mock does not operate that endpoint, inspect traffic, keep traffic logs, monetize traffic, or send traffic data to the maintainer. The GitHub build declares Internet and VPN access only for this user-configured tunnel.</p>
-    <p>Questions: <a href="mailto:majkeylab@gmail.com">majkeylab@gmail.com</a></p>
+    <p>Your chosen VPN operator can process network traffic and connection information under its own terms. Review those terms before importing a configuration. Connection requires an in-app disclosure and Android's VPN permission.</p>
+    <h2 id="deletion">Retention and deletion</h2>
+    <p>Local coordinates and settings remain until overwritten, app storage is cleared, or the app is uninstalled. In the GitHub build, disconnect and choose <strong>Remove configuration</strong> to delete the stored WireGuard configuration. This does not delete the original file you imported; remove it separately using your file manager. Clearing app storage or uninstalling removes local configuration and settings. The maintainer has no remote copy of your coordinates or configuration and no app account to delete.</p>
+    <p>These actions do not delete data held by a geocoding provider, VPN operator, Google Play or another app. Contact those providers for their retention and deletion rules.</p>
+    <h2>Website, cookies and support</h2>
+    <p>These static GitHub Pages add no cookies, browser-storage scripts, analytics, advertising, forms or embedded external content. No optional website tracking is requested, so no cookie-consent banner is shown. GitHub receives page requests and logs visitor IP addresses for security; see <a href="https://docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement">GitHub's privacy statement</a>. External services open only when you follow their links.</p>
+    <p>If you email support, the maintainer receives your email address and message to answer your request, investigate faults and handle privacy requests. This relies on the legitimate interest in providing support and maintaining the app, or a legal obligation where one applies. Correspondence is retained only as needed to resolve the request and any related dispute or required legal record. You can request deletion of information the maintainer controls at the contact address above. Do not send passwords, private VPN keys or unnecessary personal information.</p>
+    <p>Public GitHub issues are public project records hosted by GitHub. Use email for private information. Support is not a mailing list and a support request is not consent to marketing.</p>
+    <h2>Your rights and children</h2>
+    <p>Where GDPR applies, you may request access, correction, deletion, restriction or portability and object to processing where the conditions for those rights apply. Contact the maintainer for information they hold, and the respective provider for its processing. Provider notices explain their transfers and safeguards. You may complain to your local supervisory authority, including the <a href="https://uoou.gov.cz/">Czech Office for Personal Data Protection</a>. The maintainer does not use app data for profiling or automated decisions.</p>
+    <p>Location Mock is a testing utility intended for adults; it does not provide child accounts or knowingly request children's information. Changes to these practices will be reflected here and, where relevant, in the app.</p>
+    <p><a href="terms.html">Terms, costs, third-party notices and contact</a></p>
   </main>
 </body>
 </html>

@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.1.0-rc.2 - 2026-10-05
+
+- Explain device geocoding and chosen VPN-provider processing before use.
+- Link full privacy, deletion, terms and third-party notices from the app.
+- Add accessible policy navigation and correct outdated third-party notices.
+
 ## 1.1.0-rc.1 - 2026-08-29
 
 ### Added
