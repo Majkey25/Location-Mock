@@ -37,7 +37,7 @@ import kotlinx.coroutines.withContext
 fun VpnFeatureSection() {
     val context = LocalContext.current
     val controller = remember(context.applicationContext) {
-        WireGuardVpnController(context.applicationContext)
+        WireGuardVpnController.getInstance(context)
     }
     val preferences = remember {
         context.getSharedPreferences(VPN_UI_PREFERENCES, Context.MODE_PRIVATE)

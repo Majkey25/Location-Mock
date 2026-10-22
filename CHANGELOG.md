@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.1.0-rc.3 - 2026-10-22
+
+- Retain the same VPN controller across screen recreation and verify tunnel shutdown before removing its configuration.
+- Hide coordinates from foreground notifications and mark them private on the lock screen.
+- Verify the Gradle distribution checksum.
+
 ## 1.1.0-rc.2 - 2026-10-05
 
 - Explain device geocoding and chosen VPN-provider processing before use.

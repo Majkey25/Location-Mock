@@ -29,7 +29,7 @@ enum class VpnUiState {
     ERROR,
 }
 
-class WireGuardVpnController(context: Context) {
+class WireGuardVpnController private constructor(context: Context) {
     private val appContext = context.applicationContext
     private val configFile = File(appContext.filesDir, CONFIG_FILE_NAME)
     private val storeDelegate = lazy { EncryptedVpnConfigStore(configFile, AndroidVpnKey.getOrCreate()) }
@@ -99,7 +99,9 @@ class WireGuardVpnController(context: Context) {
     suspend fun disconnect(): Result<Unit> = operation {
         state = VpnUiState.DISCONNECTING
         if (backendDelegate.isInitialized()) {
-            backendDelegate.value.setState(tunnel, Tunnel.State.DOWN, null)
+            check(backendDelegate.value.setState(tunnel, Tunnel.State.DOWN, null) == Tunnel.State.DOWN) {
+                "WireGuard disconnection failed."
+            }
         }
         state = inactiveState()
         error = null
@@ -107,7 +109,9 @@ class WireGuardVpnController(context: Context) {
 
     suspend fun removeConfiguration(): Result<Unit> = operation {
         if (backendDelegate.isInitialized()) {
-            backendDelegate.value.setState(tunnel, Tunnel.State.DOWN, null)
+            check(backendDelegate.value.setState(tunnel, Tunnel.State.DOWN, null) == Tunnel.State.DOWN) {
+                "WireGuard disconnection failed."
+            }
         }
         if (storeDelegate.isInitialized()) {
             storeDelegate.value.clear()
@@ -165,12 +169,19 @@ class WireGuardVpnController(context: Context) {
         else -> "WireGuard operation failed."
     }
 
-    private companion object {
-        const val CONFIG_FILE_NAME = "wireguard.conf.enc"
-        const val TUNNEL_NAME = "LocationMock"
-        const val READ_BUFFER_BYTES = 8_192
+    companion object {
+        private var instance: WireGuardVpnController? = null
 
-        val BUSY_OR_CONNECTED_STATES = setOf(
+        // GoBackend owns the active tunnel by identity, beyond the Activity lifetime.
+        @Synchronized
+        fun getInstance(context: Context): WireGuardVpnController =
+            instance ?: WireGuardVpnController(context.applicationContext).also { instance = it }
+
+        private const val CONFIG_FILE_NAME = "wireguard.conf.enc"
+        private const val TUNNEL_NAME = "LocationMock"
+        private const val READ_BUFFER_BYTES = 8_192
+
+        private val BUSY_OR_CONNECTED_STATES = setOf(
             VpnUiState.CONNECTED,
             VpnUiState.CONNECTING,
             VpnUiState.DISCONNECTING,

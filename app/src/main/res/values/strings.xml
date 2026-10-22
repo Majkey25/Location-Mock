@@ -3,7 +3,7 @@
     <string name="app_name">Location Mock</string>
     <string name="notification_channel_name">Mock location</string>
     <string name="notification_starting">Starting mock location…</string>
-    <string name="notification_active">Mocking %1$.5f, %2$.5f</string>
+    <string name="notification_active">Mock location is active</string>
     <string name="notification_stop">Stop</string>
     <string name="error_mock_not_available">Mock location is not available.</string>
     <string name="menu">Menu</string>
