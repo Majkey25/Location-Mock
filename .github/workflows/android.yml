@@ -46,6 +46,6 @@ jobs:
           retention-days: 14
           path: |
             app/build/outputs/apk/debug/app-debug.apk
-            app/build/outputs/apk/githubRelease/app-githubRelease.apk
+            app/build/outputs/apk/githubRelease/app-githubRelease-unsigned.apk
             app/build/outputs/bundle/release/app-release.aab
             app/build/reports/lint-results-debug.html
