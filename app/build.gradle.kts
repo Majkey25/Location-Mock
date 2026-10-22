@@ -19,8 +19,9 @@ android {
         applicationId = "com.majkeylab.locationmock"
         minSdk = 29
         targetSdk = 37
-        versionCode = 4
-        versionName = "1.1.0-rc.2"
+        versionCode = 5
+        versionName = "1.1.0-rc.3"
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
     signingConfigs {
@@ -106,6 +107,8 @@ dependencies {
 
     testImplementation("junit:junit:4.13.2")
     testImplementation("org.jetbrains.kotlin:kotlin-test:2.3.21")
+    androidTestImplementation("androidx.test:runner:1.7.0")
+    androidTestImplementation("androidx.test:core:1.7.0")
 
     debugImplementation("androidx.compose.ui:ui-tooling")
 }

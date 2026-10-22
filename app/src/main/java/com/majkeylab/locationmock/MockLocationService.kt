@@ -119,7 +119,7 @@ class MockLocationService : Service() {
             .addOnSuccessListener {
                 if (!stopping && requestGeneration == generation) {
                     setState(active = true, error = null)
-                    updateNotification(current)
+                    updateNotification()
                     handler.postDelayed(
                         { publishLocation(requestGeneration) },
                         UPDATE_INTERVAL_MS,
@@ -188,16 +188,10 @@ class MockLocationService : Service() {
         getSystemService(NotificationManager::class.java).createNotificationChannel(channel)
     }
 
-    private fun updateNotification(current: Coordinates) {
+    private fun updateNotification() {
         getSystemService(NotificationManager::class.java).notify(
             NOTIFICATION_ID,
-            notification(
-                getString(
-                    R.string.notification_active,
-                    current.latitude,
-                    current.longitude,
-                ),
-            ),
+            notification(getString(R.string.notification_active)),
         )
     }
 
@@ -205,6 +199,7 @@ class MockLocationService : Service() {
         .setSmallIcon(R.drawable.ic_notification)
         .setContentTitle(getString(R.string.app_name))
         .setContentText(text)
+        .setVisibility(Notification.VISIBILITY_PRIVATE)
         .setContentIntent(
             PendingIntent.getActivity(
                 this,
